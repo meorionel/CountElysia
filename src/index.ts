@@ -12,7 +12,14 @@ const app = new Elysia()
 		};
 	})
 	.get("/", () => {
-		return new Response(Bun.file("docs/api.html"), {
+		return new Response(Bun.file("docs/api-en.html"), {
+			headers: {
+				"Content-Type": "text/html; charset=utf-8",
+			},
+		});
+	})
+	.get("/zh", () => {
+		return new Response(Bun.file("docs/api-zh.html"), {
 			headers: {
 				"Content-Type": "text/html; charset=utf-8",
 			},
