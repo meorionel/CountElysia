@@ -12,6 +12,16 @@ import {
 export const limitCountController = new Elysia({
 	prefix: "/limit-count",
 })
+	.use(
+		rateLimit({
+			max: Number(process.env.LIMIT_GET_RATE_LIMIT_MAX || 10),
+			duration: Number(process.env.LIMIT_GET_RATE_LIMIT_DURATION || 60_000),
+			generator: (req) => {
+				const url = new URL(req.url);
+				return `${req.method}:${url.pathname}`;
+			},
+		})
+	)
 	.get(
 		"/:id",
 		({ params: { id }, query: { fingerprint } }) =>
@@ -23,11 +33,12 @@ export const limitCountController = new Elysia({
 			detail: { summary: "查询限制计数状态" },
 		}
 	)
+
 	.use(
 		rateLimit({
-			max: Number(process.env.LIMIT_COUNT_RATE_LIMIT_MAX || 5),
+			max: Number(process.env.LIMIT_POST_RATE_LIMIT_MAX || 1),
 			duration: Number(
-				process.env.LIMIT_COUNT_RATE_LIMIT_DURATION || 60_000
+				process.env.LIMIT_POST_RATE_LIMIT_DURATION || 60_000
 			),
 			generator: (req) => {
 				const url = new URL(req.url);
