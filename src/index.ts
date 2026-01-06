@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
 import { staticPlugin } from "@elysiajs/static";
-import { countController } from "./modules/count";
+import { countController } from "./modules/count/index";
 
 const app = new Elysia()
 	.onError(({ code, error, set }) => {
