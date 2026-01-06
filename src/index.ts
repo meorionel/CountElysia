@@ -1,10 +1,19 @@
 import { Elysia } from "elysia";
 import { staticPlugin } from "@elysiajs/static";
 import { countController } from "./modules/count/index";
+import { limitCountController } from "./modules/limit-count/index";
 
 const app = new Elysia()
 	.onError(({ code, error, set }) => {
-		console.error(`[ERROR]${code}: error`);
+		console.error(`[ERROR]${code}:`, error);
+		if (code === "VALIDATION") {
+			set.status = 400;
+			return {
+				success: false,
+				message: "Validation Error",
+				detail: error,
+			};
+		}
 		set.status = 500;
 		return {
 			success: false,
@@ -31,7 +40,9 @@ const app = new Elysia()
 			assets: "docs",
 		})
 	)
-	.group("/api", (app) => app.use(countController))
+	.group("/api", (app) =>
+		app.use(countController).use(limitCountController)
+	)
 	.listen(process.env.APP_PORT || 3000);
 
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
