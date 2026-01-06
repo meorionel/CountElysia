@@ -18,10 +18,12 @@ const app = new Elysia()
 			},
 		});
 	})
-	.use(staticPlugin({
-		prefix: "/docs",
-		assets: "docs",
-	}))
+	.use(
+		staticPlugin({
+			prefix: "/docs",
+			assets: "docs",
+		})
+	)
 	.group("/api", (app) => app.use(countController))
 	.listen(process.env.APP_PORT || 3000);
 

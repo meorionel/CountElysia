@@ -9,6 +9,7 @@
 	"dependencies": {
 		"@elysiajs/static": "^1.4.7",
 		"elysia": "latest",
+		"elysia-rate-limit": "^4.4.2",
 		"prettier": "^3.7.4"
 	},
 	"devDependencies": {
