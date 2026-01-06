@@ -5,27 +5,24 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>CountElysia API 文档</title>
 		<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+		<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 	</head>
 	<body class="bg-gray-50 text-gray-800 font-sans antialiased">
-		<div class="flex min-h-screen">
+		<div id="app" class="flex min-h-screen">
 			<aside class="w-64 bg-white border-r border-gray-200 fixed h-full overflow-y-auto">
 				<div class="p-5 border-b border-gray-200">
 					<h1 class="text-xl font-bold text-gray-700">CountElysia</h1>
 					<p class="text-sm text-gray-500 mt-1">API Reference v1.0.50</p>
 				</div>
 				<nav class="p-4">
-					<div class="mb-6">
-						<h2 class="text-xs uppercase text-gray-400 font-semibold mb-3 tracking-wider">快速开始</h2>
-						<a href="#introduction" class="nav-item block px-3 py-2 rounded-lg text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200 text-sm">简介</a>
-					</div>
-					<div class="mb-6">
-						<h2 class="text-xs uppercase text-gray-400 font-semibold mb-3 tracking-wider">配置</h2>
-						<a href="#environment-variables" class="nav-item block px-3 py-2 rounded-lg text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200 text-sm">环境变量</a>
-					</div>
-					<div>
-						<h2 class="text-xs uppercase text-gray-400 font-semibold mb-3 tracking-wider">计数器</h2>
-						<a href="#get-count" class="nav-item block px-3 py-2 rounded-lg text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200 text-sm">获取计数器</a>
-						<a href="#increment-count" class="nav-item block px-3 py-2 rounded-lg text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200 text-sm">自增计数器</a>
+					<div v-for="(section, index) in navSections" :key="index" class="mb-6">
+						<h2 class="text-xs uppercase text-gray-400 font-semibold mb-3 tracking-wider">{{ section.title }}</h2>
+						<a
+							v-for="item in section.items"
+							:key="item.href"
+							:href="item.href"
+							class="nav-item block px-3 py-2 rounded-lg text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200 text-sm"
+						>{{ item.text }}</a>
 					</div>
 				</nav>
 				<div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
@@ -34,7 +31,7 @@
 						<span>English</span>
 					</a>
 				</div>
-			</aside>.
+			</aside>
 
 			<main class="flex-1 p-8 h-screen overflow-y-auto ml-64">
 				<div class="max-w-5xl mx-auto">
@@ -43,27 +40,11 @@
 						<p class="text-gray-600 mb-6">CountElysia 是一个基于 Elysia.js 构建的高性能计数器服务，提供简单可靠的计数功能。本文档将帮助您快速了解和使用我们的 API。</p>
 
 						<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-							<div class="flex items-start gap-4 p-4 bg-indigo-50 rounded-lg">
-								<div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">🚀</div>
+							<div v-for="feature in features" :key="feature.title" class="flex items-start gap-4 p-4 bg-indigo-50 rounded-lg">
+								<div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">{{ feature.icon }}</div>
 								<div>
-									<h3 class="font-semibold text-gray-800 mb-1">高性能</h3>
-									<p class="text-sm text-gray-500">基于 Bun 运行时和 Elysia.js 框架，提供卓越的性能和低延迟响应。</p>
-								</div>
-							</div>
-
-							<div class="flex items-start gap-4 p-4 bg-indigo-50 rounded-lg">
-								<div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">🔗</div>
-								<div>
-									<h3 class="font-semibold text-gray-800 mb-1">简单易用</h3>
-									<p class="text-sm text-gray-500">简洁的 RESTful API 设计，易于集成到任何项目中。</p>
-								</div>
-							</div>
-
-							<div class="flex items-start gap-4 p-4 bg-indigo-50 rounded-lg">
-								<div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">💾</div>
-								<div>
-									<h3 class="font-semibold text-gray-800 mb-1">持久化存储</h3>
-									<p class="text-sm text-gray-500">使用 MySQL 数据库确保计数数据持久化和可靠性。</p>
+									<h3 class="font-semibold text-gray-800 mb-1">{{ feature.title }}</h3>
+									<p class="text-sm text-gray-500">{{ feature.desc }}</p>
 								</div>
 							</div>
 						</div>
@@ -73,108 +54,32 @@
 						<h2 class="text-2xl font-bold text-gray-800 mb-4 pb-4 border-b border-gray-100">环境变量</h2>
 						<p class="text-gray-600 mb-6">CountElysia 使用环境变量进行配置。以下是所有可用的环境变量及其说明。</p>
 
-						<h3 class="text-lg font-semibold text-gray-700 mb-4">应用配置</h3>
-						<div class="overflow-x-auto mb-8">
-							<table class="w-full text-sm">
-								<thead>
-									<tr class="border-b border-gray-200">
-										<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">变量名</th>
-										<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">默认值</th>
-										<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">描述</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr class="border-b border-gray-100">
-										<td class="py-2 px-3 font-mono text-indigo-600">APP_NAME</td>
-										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">CountElysia</span></td>
-										<td class="py-2 px-3 text-gray-600">应用名称</td>
-									</tr>
-									<tr class="border-b border-gray-100">
-										<td class="py-2 px-3 font-mono text-indigo-600">APP_PORT</td>
-										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">3000</span></td>
-										<td class="py-2 px-3 text-gray-600">应用监听端口</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-
-						<h3 class="text-lg font-semibold text-gray-700 mb-4">数据库配置</h3>
-						<div class="overflow-x-auto mb-8">
-							<table class="w-full text-sm">
-								<thead>
-									<tr class="border-b border-gray-200">
-										<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">变量名</th>
-										<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">默认值</th>
-										<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">描述</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr class="border-b border-gray-100">
-										<td class="py-2 px-3 font-mono text-indigo-600">DB_USER</td>
-										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">-</span></td>
-										<td class="py-2 px-3 text-gray-600">数据库用户名</td>
-									</tr>
-									<tr class="border-b border-gray-100">
-										<td class="py-2 px-3 font-mono text-indigo-600">DB_PASSWORD</td>
-										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">-</span></td>
-										<td class="py-2 px-3 text-gray-600">数据库密码</td>
-									</tr>
-									<tr class="border-b border-gray-100">
-										<td class="py-2 px-3 font-mono text-indigo-600">DB_HOST</td>
-										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">localhost</span></td>
-										<td class="py-2 px-3 text-gray-600">数据库主机地址</td>
-									</tr>
-									<tr class="border-b border-gray-100">
-										<td class="py-2 px-3 font-mono text-indigo-600">DB_PORT</td>
-										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">3306</span></td>
-										<td class="py-2 px-3 text-gray-600">数据库端口</td>
-									</tr>
-									<tr>
-										<td class="py-2 px-3 font-mono text-indigo-600">DB_NAME</td>
-										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">-</span></td>
-										<td class="py-2 px-3 text-gray-600">数据库名称</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-
-						<h3 class="text-lg font-semibold text-gray-700 mb-4">限流配置</h3>
-						<div class="overflow-x-auto mb-6">
-							<table class="w-full text-sm">
-								<thead>
-									<tr class="border-b border-gray-200">
-										<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">变量名</th>
-										<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">默认值</th>
-										<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">描述</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr class="border-b border-gray-100">
-										<td class="py-2 px-3 font-mono text-indigo-600">GET_RATE_LIMIT_MAX</td>
-										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">10</span></td>
-										<td class="py-2 px-3 text-gray-600">GET 请求限流：时间窗口内最大请求次数</td>
-									</tr>
-									<tr class="border-b border-gray-100">
-										<td class="py-2 px-3 font-mono text-indigo-600">POST_RATE_LIMIT_MAX</td>
-										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">1</span></td>
-										<td class="py-2 px-3 text-gray-600">POST 请求限流：时间窗口内最大请求次数</td>
-									</tr>
-									<tr class="border-b border-gray-100">
-										<td class="py-2 px-3 font-mono text-indigo-600">GET_RATE_LIMIT_DURATION</td>
-										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">60000</span></td>
-										<td class="py-2 px-3 text-gray-600">GET 请求限流：时间窗口时长（毫秒）</td>
-									</tr>
-									<tr>
-										<td class="py-2 px-3 font-mono text-indigo-600">POST_RATE_LIMIT_DURATION</td>
-										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">60000</span></td>
-										<td class="py-2 px-3 text-gray-600">POST 请求限流：时间窗口时长（毫秒）</td>
-									</tr>
-								</tbody>
-							</table>
+						<div v-for="(group, groupIndex) in envGroups" :key="groupIndex">
+							<h3 class="text-lg font-semibold text-gray-700 mb-4">{{ group.title }}</h3>
+							<div class="overflow-x-auto mb-8">
+								<table class="w-full text-sm">
+									<thead>
+										<tr class="border-b border-gray-200">
+											<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">变量名</th>
+											<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">默认值</th>
+											<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">描述</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr v-for="env in group.items" :key="env.name" class="border-b border-gray-100">
+											<td class="py-2 px-3 font-mono text-indigo-600">{{ env.name }}</td>
+											<td class="py-2 px-3"><span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">{{ env.default }}</span></td>
+											<td class="py-2 px-3 text-gray-600">{{ env.desc }}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
 						</div>
 
 						<div class="p-4 bg-amber-50 border-l-4 border-amber-500 rounded-r">
-							<p class="text-amber-700 text-sm"><strong>提示：</strong>请确保在生产环境中使用强密码，并限制数据库访问权限。环境变量文件（.env）不应提交到版本控制系统。</p>
+							<p class="text-amber-700 text-sm">
+								<strong>提示：</strong>请确保在生产环境中使用强密码，并限制数据库访问权限。环境变量文件（.env）不应提交到版本控制系统。
+							</p>
 						</div>
 					</section>
 
@@ -184,59 +89,85 @@
 						<div class="bg-slate-900 rounded-lg overflow-hidden">
 							<div class="flex justify-between items-center px-4 py-2 bg-slate-800 border-b border-slate-700">
 								<span class="text-gray-400 text-sm">Base URL</span>
-								<button class="copy-btn text-gray-400 hover:text-white text-sm cursor-pointer transition-colors" onclick="copyCode(this)">复制</button>
+								<button class="copy-btn text-gray-400 hover:text-white text-sm cursor-pointer transition-colors" @click="copyCode($event, 'http://localhost:3000/api')">复制</button>
 							</div>
 							<div class="p-4 overflow-x-auto">
 								<pre class="text-gray-300 text-sm font-mono">http://localhost:3000/api</pre>
-							</div>.
+							</div>
 						</div>
 					</section>
 
-					<section id="get-count" class="bg-white rounded-xl shadow-sm p-8 mb-8">
-						<h2 class="text-2xl font-bold text-gray-800 mb-4 pb-4 border-b border-gray-100">获取计数器</h2>
-						<p class="text-gray-600 mb-6">获取指定名称的计数器当前值。如果计数器不存在，将自动创建并返回初始值 0。</p>
+					<section v-for="endpoint in endpoints" :key="endpoint.id" :id="endpoint.id" class="bg-white rounded-xl shadow-sm p-8 mb-8">
+						<h2 class="text-2xl font-bold text-gray-800 mb-4 pb-4 border-b border-gray-100">{{ endpoint.title }}</h2>
+						<p class="text-gray-600 mb-6">{{ endpoint.description }}</p>
 
 						<div class="border border-gray-200 rounded-lg overflow-hidden mb-6">
-							<div class="flex items-center gap-3 p-4 bg-gray-50 border-b border-gray-200 cursor-pointer" onclick="toggleEndpoint(this)">
-								<span class="px-3 py-1 rounded text-xs font-semibold bg-emerald-100 text-emerald-700">GET</span>.
-								<code class="text-gray-700 text-sm">/api/count/:name</code>
-								<span class="ml-auto text-gray-500 text-sm">获取计数器</span>
+							<div class="flex items-center gap-3 p-4 bg-gray-50 border-b border-gray-200 cursor-pointer" @click="toggleEndpoint(endpoint.id)">
+								<span :class="['px-3 py-1 rounded text-xs font-semibold', endpoint.method === 'GET' ? 'bg-emerald-100 text-emerald-700' : 'bg-indigo-100 text-indigo-700']">{{ endpoint.method }}</span>
+								<code class="text-gray-700 text-sm">{{ endpoint.path }}</code>
+								<span class="ml-auto text-gray-500 text-sm">{{ endpoint.title }}</span>
 							</div>
-							<div class="endpoint-body p-5 hidden">
+							<div :class="['endpoint-body p-5', { hidden: !expandedEndpoints[endpoint.id] }]">
 								<div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 mb-5 rounded-r">
-									<p class="text-gray-600">此端点用于获取指定名称的计数器当前值。如果计数器不存在，系统会自动创建该计数器并初始化为 0。</p>
+									<p class="text-gray-600">{{ endpoint.detail }}</p>
 								</div>
 
-								<h4 class="text-base font-semibold text-gray-700 mb-3 mt-5">路径参数</h4>
-								<div class="overflow-x-auto">
-									<table class="w-full text-sm">
-										<thead>
-											<tr class="border-b border-gray-200">
-												<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">参数名</th>
-												<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">类型</th>
-												<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">必填</th>
-												<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">描述</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr class="border-b border-gray-100">
-												<td class="py-2 px-3 font-mono text-indigo-600">name</td>
-												<td class="py-2 px-3"><span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded text-xs font-medium">string</span></td>
-												<td class="py-2 px-3"><span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-medium">是</span></td>
-												<td class="py-2 px-3 text-gray-600">计数器的唯一标识名称</td>
-											</tr>
-										</tbody>
-									</table>
+								<div v-if="endpoint.params && endpoint.params.length">
+									<h4 class="text-base font-semibold text-gray-700 mb-3 mt-5">路径参数</h4>
+									<div class="overflow-x-auto">
+										<table class="w-full text-sm">
+											<thead>
+												<tr class="border-b border-gray-200">
+													<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">参数名</th>
+													<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">类型</th>
+													<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">必填</th>
+													<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">描述</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr v-for="param in endpoint.params" :key="param.name" class="border-b border-gray-100">
+													<td class="py-2 px-3 font-mono text-indigo-600">{{ param.name }}</td>
+													<td class="py-2 px-3"><span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded text-xs font-medium">{{ param.type }}</span></td>
+													<td class="py-2 px-3"><span :class="['px-2 py-0.5 rounded text-xs font-medium', param.required ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600']">{{ param.required ? '是' : '否' }}</span></td>
+													<td class="py-2 px-3 text-gray-600">{{ param.desc }}</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+
+								<div v-if="endpoint.bodyParams && endpoint.bodyParams.length">
+									<h4 class="text-base font-semibold text-gray-700 mb-3 mt-5">请求体参数</h4>
+									<div class="overflow-x-auto">
+										<table class="w-full text-sm">
+											<thead>
+												<tr class="border-b border-gray-200">
+													<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">参数名</th>
+													<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">类型</th>
+													<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">必填</th>
+													<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">描述</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr v-for="param in endpoint.bodyParams" :key="param.name" class="border-b border-gray-100">
+													<td class="py-2 px-3 font-mono text-indigo-600">{{ param.name }}</td>
+													<td class="py-2 px-3"><span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded text-xs font-medium">{{ param.type }}</span></td>
+													<td class="py-2 px-3"><span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-medium">是</span></td>
+													<td class="py-2 px-3 text-gray-600">{{ param.desc }}</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
 								</div>
 
 								<h4 class="text-base font-semibold text-gray-700 mb-3 mt-5">请求示例</h4>
 								<div class="bg-slate-900 rounded-lg overflow-hidden">
 									<div class="flex justify-between items-center px-4 py-2 bg-slate-800 border-b border-slate-700">
 										<span class="text-gray-400 text-sm">Request</span>
-										<button class="copy-btn text-gray-400 hover:text-white text-sm cursor-pointer transition-colors" onclick="copyCode(this)">复制</button>
+										<button class="copy-btn text-gray-400 hover:text-white text-sm cursor-pointer transition-colors" @click="copyCode($event, endpoint.requestExample)">复制</button>
 									</div>
 									<div class="p-4 overflow-x-auto">
-										<pre class="text-gray-300 text-sm font-mono">curl -X GET http://localhost:3000/api/count/my-counter</pre>
+										<pre class="text-gray-300 text-sm font-mono">{{ endpoint.requestExample }}</pre>
 									</div>
 								</div>
 
@@ -244,130 +175,47 @@
 								<div class="bg-slate-900 rounded-lg overflow-hidden">
 									<div class="flex justify-between items-center px-4 py-2 bg-slate-800 border-b border-slate-700">
 										<span class="text-gray-400 text-sm">Response (200 OK)</span>
-										<button class="copy-btn text-gray-400 hover:text-white text-sm cursor-pointer transition-colors" onclick="copyCode(this)">复制</button>
+										<button class="copy-btn text-gray-400 hover:text-white text-sm cursor-pointer transition-colors" @click="copyCode($event, endpoint.responseExample)">复制</button>
 									</div>
 									<div class="p-4 overflow-x-auto">
-										<pre class="text-gray-300 text-sm font-mono">{
-  "success": true,
-  "message": "Query success",
-  "data": {
-    "name": "my-counter",
-    "count": 5
-  }
-}</pre>
+										<pre class="text-gray-300 text-sm font-mono">{{ endpoint.responseExample }}</pre>
 									</div>
 								</div>
 
 								<div class="mt-6 p-5 bg-gray-50 rounded-lg border border-gray-200">
 									<h4 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2"><span>⚡</span> 试试看</h4>
 									<div class="space-y-3">
-										<div>
-											<label class="block text-sm text-gray-600 mb-1">计数器名称 (name)</label>
-											<input type="text" id="get-name" value="my-counter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono" placeholder="输入计数器名称" />
+										<div v-for="input in endpoint.inputs" :key="input.id">
+											<label :for="input.id" class="block text-sm text-gray-600 mb-1">{{ input.label }}</label>
+											<input
+												:type="input.type || 'text'"
+												:id="input.id"
+												v-model="input.value"
+												class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono"
+												:placeholder="input.placeholder"
+											/>
 										</div>
-										<button onclick="tryGetCount(this)" class="px-5 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors cursor-pointer disabled:opacity-50">发送请求</button>
+										<button
+											@click="executeRequest(endpoint)"
+											class="px-5 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors cursor-pointer disabled:opacity-50"
+											:disabled="endpoint.loading"
+										>
+											{{ endpoint.loading ? '加载中...' : '发送请求' }}
+										</button>
 									</div>
-									<div id="get-response" class="mt-4 hidden">
-										<span class="response-status inline-block px-2 py-1 rounded text-sm font-semibold mb-2"></span>
+									<div v-if="endpoint.response" class="mt-4">
+										<span :class="['response-status inline-block px-2 py-1 rounded text-sm font-semibold mb-2', endpoint.response.ok ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700']">
+											{{ endpoint.response.status }} {{ endpoint.response.statusText }}
+										</span>
 										<div class="bg-slate-900 rounded-lg overflow-hidden">
 											<div class="flex justify-between items-center px-4 py-2 bg-slate-800 border-b border-slate-700">
 												<span class="text-gray-400 text-sm">Response</span>
-												<button class="copy-btn text-gray-400 hover:text-white text-sm cursor-pointer transition-colors" onclick="copyCode(this)">复制</button>
+												<button class="copy-btn text-gray-400 hover:text-white text-sm cursor-pointer transition-colors" @click="copyCode($event, endpoint.response.data)">
+													复制
+												</button>
 											</div>
 											<div class="p-4 overflow-x-auto">
-												<pre class="text-gray-300 text-sm font-mono"></pre>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>.
-						</div>
-					</section>
-
-					<section id="increment-count" class="bg-white rounded-xl shadow-sm p-8 mb-8">
-						<h2 class="text-2xl font-bold text-gray-800 mb-4 pb-4 border-b border-gray-100">自增计数器</h2>
-						<p class="text-gray-600 mb-6">将指定名称的计数器增加 1 并返回新的计数值。如果计数器不存在，将自动创建并初始化为 1。</p>
-
-						<div class="border border-gray-200 rounded-lg overflow-hidden mb-6">
-							<div class="flex items-center gap-3 p-4 bg-gray-50 border-b border-gray-200 cursor-pointer" onclick="toggleEndpoint(this)">
-								<span class="px-3 py-1 rounded text-xs font-semibold bg-indigo-100 text-indigo-700">POST</span>
-								<code class="text-gray-700 text-sm">/api/count/:name</code>
-								<span class="ml-auto text-gray-500 text-sm">自增计数器</span>
-							</div>
-							<div class="endpoint-body p-5 hidden">
-								<div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 mb-5 rounded-r">
-									<p class="text-gray-600">此端点用于将指定名称的计数器自增 1。这是一个幂等操作，多次调用会使计数器的值不断增加。</p>
-								</div>
-
-								<h4 class="text-base font-semibold text-gray-700 mb-3 mt-5">路径参数</h4>
-								<div class="overflow-x-auto">
-									<table class="w-full text-sm">
-										<thead>
-											<tr class="border-b border-gray-200">
-												<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">参数名</th>
-												<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">类型</th>
-												<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">必填</th>
-												<th class="text-left py-2 px-3 font-semibold text-gray-600 bg-gray-50">描述</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr class="border-b border-gray-100">
-												<td class="py-2 px-3 font-mono text-indigo-600">name</td>
-												<td class="py-2 px-3"><span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded text-xs font-medium">string</span></td>
-												<td class="py-2 px-3"><span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-medium">是</span></td>
-												<td class="py-2 px-3 text-gray-600">计数器的唯一标识名称</td>
-											</tr>
-										</tbody>
-									</table>
-								</div>
-
-								<h4 class="text-base font-semibold text-gray-700 mb-3 mt-5">请求示例</h4>
-								<div class="bg-slate-900 rounded-lg overflow-hidden">
-									<div class="flex justify-between items-center px-4 py-2 bg-slate-800 border-b border-slate-700">
-										<span class="text-gray-400 text-sm">Request</span>
-										<button class="copy-btn text-gray-400 hover:text-white text-sm cursor-pointer transition-colors" onclick="copyCode(this)">复制</button>
-									</div>
-									<div class="p-4 overflow-x-auto">
-										<pre class="text-gray-300 text-sm font-mono">curl -X POST http://localhost:3000/api/count/my-counter</pre>
-									</div>
-								</div>
-
-								<h4 class="text-base font-semibold text-gray-700 mb-3 mt-5">响应示例</h4>
-								<div class="bg-slate-900 rounded-lg overflow-hidden">
-									<div class="flex justify-between items-center px-4 py-2 bg-slate-800 border-b border-slate-700">
-										<span class="text-gray-400 text-sm">Response (200 OK)</span>
-										<button class="copy-btn text-gray-400 hover:text-white text-sm cursor-pointer transition-colors" onclick="copyCode(this)">复制</button>
-									</div>
-									<div class="p-4 overflow-x-auto">
-										<pre class="text-gray-300 text-sm font-mono">{
-  "success": true,
-  "message": "Update success",
-  "data": {
-    "name": "my-counter",
-    "count": 6
-  }
-}</pre>
-									</div>
-								</div>
-
-								<div class="mt-6 p-5 bg-gray-50 rounded-lg border border-gray-200">
-									<h4 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2"><span>⚡</span> 试试看</h4>
-									<div class="space-y-3">
-										<div>
-											<label class="block text-sm text-gray-600 mb-1">计数器名称 (name)</label>
-											<input type="text" id="post-name" value="my-counter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono" placeholder="输入计数器名称" />
-										</div>
-										<button onclick="tryPostCount(this)" class="px-5 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors cursor-pointer disabled:opacity-50">发送请求</button>
-									</div>
-									<div id="post-response" class="mt-4 hidden">
-										<span class="response-status inline-block px-2 py-1 rounded text-sm font-semibold mb-2"></span>
-										<div class="bg-slate-900 rounded-lg overflow-hidden">
-											<div class="flex justify-between items-center px-4 py-2 bg-slate-800 border-b border-slate-700">
-												<span class="text-gray-400 text-sm">Response</span>
-												<button class="copy-btn text-gray-400 hover:text-white text-sm cursor-pointer transition-colors" onclick="copyCode(this)">复制</button>
-											</div>
-											<div class="p-4 overflow-x-auto">
-												<pre class="text-gray-300 text-sm font-mono"></pre>
+												<pre class="text-gray-300 text-sm font-mono">{{ endpoint.response.data }}</pre>
 											</div>
 										</div>
 									</div>
@@ -384,17 +232,10 @@
 						<div class="bg-slate-900 rounded-lg overflow-hidden mb-6">
 							<div class="flex justify-between items-center px-4 py-2 bg-slate-800 border-b border-slate-700">
 								<span class="text-gray-400 text-sm">Response (200 OK)</span>
-								<button class="copy-btn text-gray-400 hover:text-white text-sm cursor-pointer transition-colors" onclick="copyCode(this)">复制</button>
+								<button class="copy-btn text-gray-400 hover:text-white text-sm cursor-pointer transition-colors" @click="copyCode($event, successResponseExample)">复制</button>
 							</div>
 							<div class="p-4 overflow-x-auto">
-								<pre class="text-gray-300 text-sm font-mono">{
-  "success": true,
-  "message": "Query success",
-  "data": {
-    "name": "my-counter",
-    "count": 5
-  }
-}</pre>
+								<pre class="text-gray-300 text-sm font-mono">{{ successResponseExample }}</pre>
 							</div>
 						</div>
 
@@ -409,20 +250,10 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr class="border-b border-gray-100">
-										<td class="py-2 px-3 font-mono text-indigo-600">success</td>
-										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded text-xs font-medium">boolean</span></td>
-										<td class="py-2 px-3 text-gray-600">表示请求是否成功</td>
-									</tr>
-									<tr class="border-b border-gray-100">
-										<td class="py-2 px-3 font-mono text-indigo-600">message</td>
-										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded text-xs font-medium">string</span></td>
-										<td class="py-2 px-3 text-gray-600">提供额外信息的响应消息</td>
-									</tr>
-									<tr>
-										<td class="py-2 px-3 font-mono text-indigo-600">data</td>
-										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded text-xs font-medium">object</span></td>
-										<td class="py-2 px-3 text-gray-600">包含计数器信息的响应数据</td>
+									<tr v-for="field in responseFields" :key="field.name" class="border-b border-gray-100">
+										<td class="py-2 px-3 font-mono text-indigo-600">{{ field.name }}</td>
+										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded text-xs font-medium">{{ field.type }}</span></td>
+										<td class="py-2 px-3 text-gray-600">{{ field.desc }}</td>
 									</tr>
 								</tbody>
 							</table>
@@ -438,17 +269,9 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr class="border-b border-gray-100">
-										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-xs font-medium">200 OK</span></td>
-										<td class="py-2 px-3 text-gray-600">请求成功，返回预期数据</td>
-									</tr>
-									<tr class="border-b border-gray-100">
-										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-xs font-medium">400 Bad Request</span></td>
-										<td class="py-2 px-3 text-gray-600">客户端错误，通常由无效的请求参数引起</td>
-									</tr>
-									<tr>
-										<td class="py-2 px-3"><span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-medium">500 Internal Server Error</span></td>
-										<td class="py-2 px-3 text-gray-600">服务端错误，请稍后重试</td>
+									<tr v-for="status in statusCodes" :key="status.code" class="border-b border-gray-100">
+										<td class="py-2 px-3"><span :class="['px-2 py-0.5 rounded text-xs font-medium', status.colorClass]">{{ status.code }}</span></td>
+										<td class="py-2 px-3 text-gray-600">{{ status.desc }}</td>
 									</tr>
 								</tbody>
 							</table>
@@ -458,13 +281,10 @@
 						<div class="bg-slate-900 rounded-lg overflow-hidden">
 							<div class="flex justify-between items-center px-4 py-2 bg-slate-800 border-b border-slate-700">
 								<span class="text-gray-400 text-sm">Response (Error)</span>
-								<button class="copy-btn text-gray-400 hover:text-white text-sm cursor-pointer transition-colors" onclick="copyCode(this)">复制</button>
+								<button class="copy-btn text-gray-400 hover:text-white text-sm cursor-pointer transition-colors" @click="copyCode($event, errorResponseExample)">复制</button>
 							</div>
 							<div class="p-4 overflow-x-auto">
-								<pre class="text-gray-300 text-sm font-mono">{
-  "success": false,
-  "message": "Internal Server Error"
-}</pre>
+								<pre class="text-gray-300 text-sm font-mono">{{ errorResponseExample }}</pre>
 							</div>
 						</div>
 					</section>
@@ -477,103 +297,325 @@
 		</div>
 
 		<script>
-			function toggleEndpoint(header) {
-				const body = header.nextElementSibling;
-				body.classList.toggle('hidden');
-			}
+			const { createApp, ref, reactive, computed } = Vue;
 
-			function copyCode(button) {
-				const codeBlock = button.closest('.bg-slate-900');
-				const pre = codeBlock.querySelector('pre');
-				const code = pre.textContent;
+			createApp({
+				setup() {
+					const expandedEndpoints = reactive({});
+					const copyFeedback = reactive({});
 
-				navigator.clipboard.writeText(code).then(() => {
-					const originalText = button.textContent;
-					button.textContent = '已复制!';
-					button.classList.add('text-indigo-400');
+					const navSections = [
+						{
+							title: '快速开始',
+							items: [{ href: '#introduction', text: '简介' }]
+						},
+						{
+							title: '配置',
+							items: [{ href: '#environment-variables', text: '环境变量' }]
+						},
+						{
+							title: '计数器',
+							items: [
+								{ href: '#get-count', text: '获取计数器' },
+								{ href: '#increment-count', text: '自增计数器' },
+								{ href: '#get-limit-count', text: '获取限制计数' },
+								{ href: '#increment-limit-count', text: '限制计数自增' },
+								{ href: '#response-format', text: '响应格式' }
+							]
+						}
+					];
 
-					setTimeout(() => {
-						button.textContent = originalText;
-						button.classList.remove('text-indigo-400');
-					}, 2000);
-				});
-			}
+					const features = [
+						{ icon: '🚀', title: '高性能', desc: '基于 Bun 运行时和 Elysia.js 框架，提供卓越的性能和低延迟响应。' },
+						{ icon: '🔗', title: '简单易用', desc: '简洁的 RESTful API 设计，易于集成到任何项目中。' },
+						{ icon: '💾', title: '持久化存储', desc: '使用 MySQL 数据库确保计数数据持久化和可靠性。' }
+					];
 
-			async function tryGetCount(button) {
-				const nameInput = document.getElementById('get-name');
-				const responseArea = document.getElementById('get-response');
-				const statusSpan = responseArea.querySelector('.response-status');
-				const pre = responseArea.querySelector('pre');
+					const envGroups = [
+						{
+							title: '应用配置',
+							items: [
+								{ name: 'APP_NAME', default: 'CountElysia', desc: '应用名称' },
+								{ name: 'APP_PORT', default: '3000', desc: '应用监听端口' }
+							]
+						},
+						{
+							title: '数据库配置',
+							items: [
+								{ name: 'DB_USER', default: '-', desc: '数据库用户名' },
+								{ name: 'DB_PASSWORD', default: '-', desc: '数据库密码' },
+								{ name: 'DB_HOST', default: 'localhost', desc: '数据库主机地址' },
+								{ name: 'DB_PORT', default: '3306', desc: '数据库端口' },
+								{ name: 'DB_NAME', default: '-', desc: '数据库名称' }
+							]
+						},
+						{
+							title: '限流配置',
+							items: [
+								{ name: 'GET_RATE_LIMIT_MAX', default: '10', desc: 'GET 请求限流：时间窗口内最大请求次数' },
+								{ name: 'POST_RATE_LIMIT_MAX', default: '1', desc: 'POST 请求限流：时间窗口内最大请求次数' },
+								{ name: 'GET_RATE_LIMIT_DURATION', default: '60000', desc: 'GET 请求限流：时间窗口时长（毫秒）' },
+								{ name: 'POST_RATE_LIMIT_DURATION', default: '60000', desc: 'POST 请求限流：时间窗口时长（毫秒）' },
+								{ name: 'LIMIT_COUNT_RATE_LIMIT_MAX', default: '5', desc: '限制计数端点限流：时间窗口内最大请求次数' },
+								{ name: 'LIMIT_COUNT_RATE_LIMIT_DURATION', default: '60000', desc: '限制计数端点限流：时间窗口时长（毫秒）' }
+							]
+						}
+					];
 
-				const name = nameInput.value.trim();
-				if (!name) {
-					alert('请输入计数器名称');
-					return;
+					const endpoints = reactive([
+						{
+							id: 'get-count',
+							title: '获取计数器',
+							description: '获取指定名称的计数器当前值。如果计数器不存在，将自动创建并返回初始值 0。',
+							detail: '此端点用于获取指定名称的计数器当前值。如果计数器不存在，系统会自动创建该计数器并初始化为 0。',
+							method: 'GET',
+							path: '/api/count/:name',
+							params: [
+								{ name: 'name', type: 'string', required: true, desc: '计数器的唯一标识名称' }
+							],
+							requestExample: 'curl -X GET http://localhost:3000/api/count/my-counter',
+							responseExample: `{
+  "success": true,
+  "message": "Query success",
+  "data": {
+    "name": "my-counter",
+    "count": 5
+  }
+}`,
+							inputs: [
+								{ id: 'get-name', label: '计数器名称 (name)', value: ref('my-counter'), placeholder: '输入计数器名称' }
+							],
+							loading: ref(false),
+							response: ref(null),
+							apiMethod: 'GET',
+							apiPath: '/api/count/'
+						},
+						{
+							id: 'increment-count',
+							title: '自增计数器',
+							description: '将指定名称的计数器增加 1 并返回新的计数值。如果计数器不存在，将自动创建并初始化为 1。',
+							detail: '此端点用于将指定名称的计数器自增 1。这是一个幂等操作，多次调用会使计数器的值不断增加。',
+							method: 'POST',
+							path: '/api/count/:name',
+							params: [
+								{ name: 'name', type: 'string', required: true, desc: '计数器的唯一标识名称' }
+							],
+							requestExample: 'curl -X POST http://localhost:3000/api/count/my-counter',
+							responseExample: `{
+  "success": true,
+  "message": "Increment success",
+  "data": {
+    "name": "my-counter",
+    "count": 6
+  }
+}`,
+							inputs: [
+								{ id: 'post-name', label: '计数器名称 (name)', value: ref('my-counter'), placeholder: '输入计数器名称' }
+							],
+							loading: ref(false),
+							response: ref(null),
+							apiMethod: 'POST',
+							apiPath: '/api/count/'
+						},
+						{
+							id: 'get-limit-count',
+							title: '获取限制计数',
+							description: '获取指定 ID 的限制计数信息，检查用户是否已自增。',
+							detail: '此端点用于获取指定 ID 的限制计数信息。您可以提供 fingerprint 参数来检查特定用户是否已自增。',
+							method: 'GET',
+							path: '/api/limit-count/:id',
+							params: [
+								{ name: 'id', type: 'string', required: true, desc: '计数器的唯一标识符（UUID 格式）' }
+							],
+							requestExample: 'curl -X GET "http://localhost:3000/api/limit-count/550e8400-e29b-41d4-a716-446655440000?fingerprint=abc123..."',
+							responseExample: `{
+  "success": true,
+  "message": "Query success",
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "fingerprint": "abc123...",
+    "hasIncremented": true
+  }
+}`,
+							inputs: [
+								{ id: 'get-limit-id', label: '计数器 ID (id)', value: ref('550e8400-e29b-41d4-a716-446655440000'), placeholder: '输入计数器 ID (UUID)' },
+								{ id: 'get-limit-fingerprint', label: '用户指纹 (fingerprint) - 可选', value: ref(''), placeholder: '输入用户指纹 (32字符)' }
+							],
+							loading: ref(false),
+							response: ref(null),
+							apiMethod: 'GET',
+							apiPath: '/api/limit-count/',
+							hasQueryParam: 'fingerprint'
+						},
+						{
+							id: 'increment-limit-count',
+							title: '限制计数自增',
+							description: '为指定 ID 的限制计数增加 1。每个 ID 只能被自增一次，且只能由创建时的 fingerprint 对应用户自增。',
+							detail: '此端点用于将指定 ID 的限制计数自增 1。如果计数器不存在，会创建一个新的。如果已存在且 fingerprint 不匹配，则返回错误。',
+							method: 'POST',
+							path: '/api/limit-count/:id',
+							params: [
+								{ name: 'id', type: 'string', required: true, desc: '计数器的唯一标识符（UUID 格式）' }
+							],
+							bodyParams: [
+								{ name: 'fingerprint', type: 'string', required: true, desc: '用户指纹，32 个字符，由 @fingerprintjs/fingerprintjs 生成' }
+							],
+							requestExample: `curl -X POST http://localhost:3000/api/limit-count/550e8400-e29b-41d4-a716-446655440000 \
+  -H "Content-Type: application/json" \
+  -d '{"fingerprint": "abc123..."}'`,
+							responseExample: `{
+  "success": true,
+  "message": "Increment success",
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "fingerprint": "abc123..."
+  }
+}`,
+							inputs: [
+								{ id: 'post-limit-id', label: '计数器 ID (id)', value: ref('550e8400-e29b-41d4-a716-446655440000'), placeholder: '输入计数器 ID (UUID)' },
+								{ id: 'post-limit-fingerprint', label: '用户指纹 (fingerprint)', value: ref(''), placeholder: '输入用户指纹 (32字符)' }
+							],
+							loading: ref(false),
+							response: ref(null),
+							apiMethod: 'POST',
+							apiPath: '/api/limit-count/',
+							hasBody: true,
+							bodyField: 'fingerprint'
+						}
+					]);
+
+					const successResponseExample = `{
+  "success": true,
+  "message": "Query success",
+  "data": {
+    "name": "my-counter",
+    "count": 5
+  }
+}`;
+
+					const errorResponseExample = `{
+  "success": false,
+  "message": "Internal Server Error"
+}`;
+
+					const responseFields = [
+						{ name: 'success', type: 'boolean', desc: '表示请求是否成功' },
+						{ name: 'message', type: 'string', desc: '提供额外信息的响应消息' },
+						{ name: 'data', type: 'object', desc: '包含计数器信息的响应数据' }
+					];
+
+					const statusCodes = [
+						{ code: '200 OK', desc: '请求成功，返回预期数据', colorClass: 'bg-emerald-100 text-emerald-700' },
+						{ code: '400 Bad Request', desc: '客户端错误，通常由无效的请求参数引起', colorClass: 'bg-amber-100 text-amber-700' },
+						{ code: '500 Internal Server Error', desc: '服务端错误，请稍后重试', colorClass: 'bg-red-100 text-red-700' }
+					];
+
+					const toggleEndpoint = (id) => {
+						expandedEndpoints[id] = !expandedEndpoints[id];
+					};
+
+					const copyCode = async (event, code) => {
+						try {
+							await navigator.clipboard.writeText(code);
+							const button = event.target;
+							const originalText = button.textContent;
+							button.textContent = '已复制!';
+							button.classList.add('text-indigo-400');
+
+							setTimeout(() => {
+								button.textContent = originalText;
+								button.classList.remove('text-indigo-400');
+							}, 2000);
+						} catch (err) {
+							console.error('Failed to copy:', err);
+						}
+					};
+
+					const executeRequest = async (endpoint) => {
+						const nameInput = endpoint.inputs.find(i => i.id.includes('-name') && !i.id.includes('limit'));
+						const idInput = endpoint.inputs.find(i => i.id.includes('-id'));
+						const fingerprintInput = endpoint.inputs.find(i => i.id.includes('fingerprint'));
+
+						let idOrName = '';
+						if (nameInput) {
+							idOrName = nameInput.value.value?.trim();
+							if (!idOrName) {
+								alert('请输入计数器名称');
+								return;
+							}
+						} else if (idInput) {
+							idOrName = idInput.value.value?.trim();
+							if (!idOrName) {
+								alert('请输入计数器 ID');
+								return;
+							}
+						}
+
+						const fingerprint = fingerprintInput?.value.value?.trim();
+
+						if (endpoint.hasBody && !fingerprint) {
+							alert('请输入用户指纹');
+							return;
+						}
+
+						endpoint.loading.value = true;
+
+						try {
+							let url;
+							if (endpoint.hasQueryParam && fingerprint) {
+								url = new URL(`${endpoint.apiPath}${encodeURIComponent(idOrName)}?fingerprint=${encodeURIComponent(fingerprint)}`, window.location.origin);
+							} else if (endpoint.hasQueryParam) {
+								url = new URL(`${endpoint.apiPath}${encodeURIComponent(idOrName)}`, window.location.origin);
+							} else {
+								url = `${endpoint.apiPath}${encodeURIComponent(idOrName)}`;
+							}
+
+							const options = {
+								method: endpoint.apiMethod,
+								headers: { 'Content-Type': 'application/json' }
+							};
+
+							if (endpoint.hasBody) {
+								options.body = JSON.stringify({ fingerprint });
+							}
+
+							const response = await fetch(url, options);
+							const data = await response.json();
+
+							endpoint.response.value = {
+								ok: response.ok,
+								status: response.status,
+								statusText: response.statusText,
+								data: JSON.stringify(data, null, 2)
+							};
+						} catch (error) {
+							endpoint.response.value = {
+								ok: false,
+								status: '请求失败',
+								statusText: '',
+								data: JSON.stringify({ error: error.message }, null, 2)
+							};
+						} finally {
+							endpoint.loading.value = false;
+						}
+					};
+
+					return {
+						navSections,
+						features,
+						envGroups,
+						endpoints,
+						expandedEndpoints,
+						successResponseExample,
+						errorResponseExample,
+						responseFields,
+						statusCodes,
+						toggleEndpoint,
+						copyCode,
+						executeRequest
+					};
 				}
-
-				button.disabled = true;
-				button.textContent = '加载中...';
-
-				try {
-					const response = await fetch(`/api/count/${encodeURIComponent(name)}`, {
-						method: 'GET',
-						headers: { 'Content-Type': 'application/json' }
-					});
-
-					const data = await response.json();
-
-					statusSpan.textContent = `${response.status} ${response.statusText}`;
-					statusSpan.className = 'response-status inline-block px-2 py-1 rounded text-sm font-semibold mb-2 ' + (response.ok ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700');
-					pre.textContent = JSON.stringify(data, null, 2);
-					responseArea.classList.remove('hidden');
-				} catch (error) {
-					statusSpan.textContent = '请求失败';
-					statusSpan.className = 'response-status inline-block px-2 py-1 rounded text-sm font-semibold mb-2 bg-red-100 text-red-700';
-					pre.textContent = JSON.stringify({ error: error.message }, null, 2);
-					responseArea.classList.remove('hidden');
-				} finally {
-					button.disabled = false;
-					button.textContent = '发送请求';
-				}
-			}
-
-			async function tryPostCount(button) {
-				const nameInput = document.getElementById('post-name');
-				const responseArea = document.getElementById('post-response');
-				const statusSpan = responseArea.querySelector('.response-status');
-				const pre = responseArea.querySelector('pre');
-
-				const name = nameInput.value.trim();
-				if (!name) {
-					alert('请输入计数器名称');
-					return;
-				}
-
-				button.disabled = true;
-				button.textContent = '加载中...';
-
-				try {
-					const response = await fetch(`/api/count/${encodeURIComponent(name)}`, {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' }
-					});
-
-					const data = await response.json();
-
-					statusSpan.textContent = `${response.status} ${response.statusText}`;
-					statusSpan.className = 'response-status inline-block px-2 py-1 rounded text-sm font-semibold mb-2 ' + (response.ok ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700');
-					pre.textContent = JSON.stringify(data, null, 2);
-					responseArea.classList.remove('hidden');
-				} catch (error) {
-					statusSpan.textContent = '请求失败';
-					statusSpan.className = 'response-status inline-block px-2 py-1 rounded text-sm font-semibold mb-2 bg-red-100 text-red-700';
-					pre.textContent = JSON.stringify({ error: error.message }, null, 2);
-					responseArea.classList.remove('hidden');
-				} finally {
-					button.disabled = false;
-					button.textContent = '发送请求';
-				}
-			}
+			}).mount('#app');
 		</script>
 	</body>
 </html>
